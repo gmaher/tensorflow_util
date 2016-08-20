@@ -1,32 +1,63 @@
+import tensorflow as tf
 #tensorflow utility functions
-def conv2d_3x3(x, Nchannels=3, Nfilters=32, std=0.01, padding="VALID"):
-    
-    w = tf.random_normal(shape=(3,3, Nchannels, Nfilters), stddev=std)
-    b = tf.Variable(tf.constant(std, shape=[Nfilters]))
-    
-    out = tf.nn.conv2d(x, w, [1,1,1,1], padding=padding)
-    out = tf.nn.bias_add(out, b)
-    out = tf.nn.relu(out)
-    
-    return (out, [w,b])
+def weight_variable(shape, std):
+    return tf.random_normal(shape=shape, stddev=std)
 
-def deconv2d_3x3(x, outshape, out_channels=3, Nfilters=32, std=0.01, padding="VALID"):
+def bias_variable(shape, init):
+    return tf.Variable(tf.constant(init, shape=shape))
 
+def fc(x,w,b):
+    return tf.matmul(x,w)+b   
 
-    w = tf.random_normal(shape=(3,3, out_channels, Nfilters), stddev=std)
-    b = tf.Variable(tf.constant(std, shape=[out_channels]))
+def fc_weights(x, insize, outsize, std=0.01):
+    w = weight_variable([insize, outsize], std)
+    b = bias_variable([outsize], std)
     
+    out = fc(x,w,b)
+    
+    return (out, w, b)
+
+def conv2d_3x3(x,w,b, padding="VALID"):
+   out = tf.nn.conv2d(x, w, [1,1,1,1], padding=padding)
+   out = tf.nn.bias_add(out, b)
+   out = tf.nn.relu(out)
+   
+   return out
+
+def conv2d_3x3_weights(x, Nchannels=3, Nfilters=32, std=0.01, padding="VALID"):
+    w = weight_variable([3,3,Nchannels, Nfilters], std)
+    b = bias_variable([Nfilters], std)
+    
+    out = conv2d_3x3(x,w,b,padding=padding)
+    
+    return (out, w, b)
+
+def deconv2d_3x3(x,w,b, outshape, padding="VALID"):
     out = tf.nn.conv2d_transpose(x, w, outshape, [1,1,1,1], padding=padding)
     out = tf.nn.bias_add(out, b)
     out = tf.nn.relu(out)
     
-    return (out, [w,b])
+    return out
 
-def fc(x, insize, outsize, std=0.01):
+def deconv2d_3x3_weights(x, outshape, out_channels=3, Nfilters=32, std=0.01, padding="VALID"):
+    w = weight_variable([3, 3, out_channels, Nfilters], std)
+    b = bias_variable([out_channels], std)
     
-    w = tf.Variable(tf.random_normal([insize, outsize], stddev=std))
-    b = tf.Variable(tf.constant(std, shape=[outsize]))
+    out = deconv2d_3x3(x,w,b,outshape,padding=padding)
     
-    out = tf.matmul(x,w)+b
-    
-    return (out,[w,b])
+    return (out, w, b)
+
+def conv3d_3x3(x,w,b, padding="VALID"):
+    out = tf.nn.conv3d(x,w, [1,1,1,1,1], padding=padding)
+    out = tf.nn.bias_add(out, b)
+    out = tf.nn.relu(out)
+
+    return out
+
+def conv3d_3x3_weights(x, Nchannels=3, Nfilters=32, std=0.01, padding="VALID"):
+    w = weight_variable([3,3,3,Nchannels,Nfilters], std)
+    b = bias_variable([Nfilters], std)
+
+    out = conv3d_3x3(x,w,b, padding=padding)
+
+    return (out,w,b)

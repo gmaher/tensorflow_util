@@ -68,3 +68,18 @@ conv3d_out, w_conv3d, b_conv3d = util.conv3d_3x3_weights(
 	std=0.01,
 	padding="SAME")
 print conv3d_out
+
+################################################
+# Batch normalization
+################################################
+mode = tf.placeholder(bool)
+x_fc_norm, gamma_fc, beta_fc = util.batch_norm(x_fc, mode, [100,10])
+print x_fc_norm
+print gamma_fc
+print beta_fc
+
+x_conv_norm, gamma_conv, beta_conv = util.batch_norm(x_conv, mode, [1000, 32, 32, 3])
+print x_conv_norm
+print gamma_conv
+print beta_conv
+

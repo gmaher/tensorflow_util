@@ -90,8 +90,9 @@ def batch_norm(x, mode, inshape, mom=0.9, axes=[0]):
     run_mean = mom*run_mean + (1-mom)*mu
     run_var = mom*run_var + (1-mom)*var
 
-    result = tf.cond(mode, lambda: tf.div((x-mu), var+eps)*gamma+beta,
-        lambda: tf.div((x-run_mean), run_var+eps)*gamma + beta)
+    result = tf.cond(mode, 
+        lambda: tf.div((x-mu), tf.sqrt(var)+eps)*gamma+beta,
+        lambda: tf.div((x-run_mean), tf.sqrt(run_var)+eps)*gamma + beta)
 
     return (result, gamma, beta)
 

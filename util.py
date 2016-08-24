@@ -101,5 +101,5 @@ def batch_norm(x, mode, inshape, mom=0.9, axes=[0]):
 
     result = tf.nn.batch_normalization(x, mu, var, beta, gamma, 1e-4)
 
-    return (result, gamma, beta, mu, var)
+    return (result, gamma, beta)
 

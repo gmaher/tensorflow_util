@@ -73,15 +73,13 @@ print conv3d_out
 # Batch normalization
 ################################################
 mode = tf.placeholder(bool)
-x_fc_norm, gamma_fc, beta_fc, mean_fc, var_fc = util.batch_norm(x_fc, mode, [10], mom=0.5)
+x_fc_norm = util.batch_norm(x_fc, mode, [10], mom=0.5)
 print x_fc_norm
-print gamma_fc
-print beta_fc
 
-x_conv_norm, gamma_conv, beta_conv, mean_conv, var_conv = util.batch_norm(x_conv, mode, [10, 32, 32, 3])
+
+x_conv_norm  = util.batch_norm(x_conv, mode, [10, 32, 32, 3])
 print x_conv_norm
-print gamma_conv
-print beta_conv
+
 
 init = tf.initialize_all_variables()
 sess=tf.Session()
@@ -93,9 +91,9 @@ for i in range(0,5000):
 	sess.run(x_fc_norm, feed_dict={x_fc:x,mode:True})
 
 print sess.run(tf.reduce_mean(x_fc_norm), feed_dict={x_fc:x,mode:True})
-print sess.run(mean_fc, feed_dict={x_fc:x,mode:True})
-print sess.run(var_fc, feed_dict={x_fc:x,mode:True})
+#print sess.run(mean_fc, feed_dict={x_fc:x,mode:True})
+#print sess.run(var_fc, feed_dict={x_fc:x,mode:True})
 
 print sess.run(tf.reduce_mean(x_fc_norm), feed_dict={x_fc:x,mode:False})
-print sess.run(mean_fc, feed_dict={x_fc:x,mode:False})
-print sess.run(var_fc, feed_dict={x_fc:x,mode:False})
+#print sess.run(mean_fc, feed_dict={x_fc:x,mode:False})
+#print sess.run(var_fc, feed_dict={x_fc:x,mode:False})

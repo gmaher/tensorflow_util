@@ -79,20 +79,27 @@ def batch_norm(x, mode, inshape, mom=0.9, axes=[0]):
     '''
     eps = 1e-6
 
-    run_mean = tf.Variable(tf.zeros(inshape))
-    run_var = tf.Variable(tf.zeros(inshape))
-
     gamma = tf.Variable(tf.ones(inshape))
     beta = tf.Variable(tf.zeros(inshape))
 
-    mu, var = tf.nn.moments(x,axes)
+    batch_mean, batch_var = tf.nn.moments(x,axes)
 
-    run_mean = mom*run_mean + (1-mom)*mu
-    run_var = mom*run_var + (1-mom)*var
+    ema = tf.train.ExponentialMovingAverage(mom)
 
-    result = tf.cond(mode, 
-        lambda: tf.div((x-mu), tf.sqrt(var)+eps)*gamma+beta,
-        lambda: tf.div((x-run_mean), tf.sqrt(run_var)+eps)*gamma + beta)
+    def collect_average():
+        with tf.control_dependencies([
+            ema.apply([batch_mean, batch_var])
+            ]):
+            return (tf.identity(batch_mean), tf.identity(batch_var))
 
-    return (result, gamma, beta, run_mean, run_var)
+    def get_run_stats():
+        return (ema.average(batch_mean), ema.average(batch_var))
+
+    mu, var = tf.cond(mode, 
+        collect_average,
+        get_run_stats)
+
+    result = tf.nn.batch_normalization(x, mu, var, beta, gamma, 1e-4)
+
+    return (result, gamma, beta, mu, var)
 

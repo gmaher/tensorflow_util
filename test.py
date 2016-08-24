@@ -92,5 +92,10 @@ for i in range(0,5000):
 	x= np.random.randn(100,10)+10.0
 	sess.run(x_fc_norm, feed_dict={x_fc:x,mode:True})
 
+print sess.run(tf.reduce_mean(x_fc_norm), feed_dict={x_fc:x,mode:True})
 print sess.run(mean_fc, feed_dict={x_fc:x,mode:True})
 print sess.run(var_fc, feed_dict={x_fc:x,mode:True})
+
+print sess.run(tf.reduce_mean(x_fc_norm), feed_dict={x_fc:x,mode:False})
+print sess.run(mean_fc, feed_dict={x_fc:x,mode:False})
+print sess.run(var_fc, feed_dict={x_fc:x,mode:False})
